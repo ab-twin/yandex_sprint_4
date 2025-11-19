@@ -1,1 +1,7 @@
 venv
+/.idea/.gitignore
+/.idea/architecture-pro-black_friday.iml
+/.idea/git_toolbox_blame.xml
+/.idea/modules.xml
+/.idea/php.xml
+/.idea/vcs.xml
