@@ -10,6 +10,7 @@ docker compose up -d
 
 Заполняем mongodb данными
 
+
 ```shell
 ./scripts/mongo-init.sh
 ```
