@@ -1,0 +1,217 @@
+name: mongo-sharding-repl
+
+services:
+  configsvr01:
+    image: mongo:latest
+    container_name: configsvr01
+    command:
+      [
+        "--configsvr",
+        "--replSet",
+        "configRepl",
+        "--bind_ip_all",
+        "--port",
+        "27017",
+        "--dbpath",
+        "/data/db"
+      ]
+    ports:
+      - "27101:27017"
+    volumes:
+      - config-data-01:/data/db
+
+  configsvr02:
+    image: mongo:latest
+    container_name: configsvr02
+    command:
+      [
+        "--configsvr",
+        "--replSet",
+        "configRepl",
+        "--bind_ip_all",
+        "--port",
+        "27017",
+        "--dbpath",
+        "/data/db"
+      ]
+    ports:
+      - "27102:27017"
+    volumes:
+      - config-data-02:/data/db
+
+  configsvr03:
+    image: mongo:latest
+    container_name: configsvr03
+    command:
+      [
+        "--configsvr",
+        "--replSet",
+        "configRepl",
+        "--bind_ip_all",
+        "--port",
+        "27017",
+        "--dbpath",
+        "/data/db"
+      ]
+    ports:
+      - "27103:27017"
+    volumes:
+      - config-data-03:/data/db
+
+  shard1-01:
+    image: mongo:latest
+    container_name: shard1-01
+    command:
+      [
+        "--shardsvr",
+        "--replSet",
+        "shard1Repl",
+        "--bind_ip_all",
+        "--port",
+        "27017",
+        "--dbpath",
+        "/data/db"
+      ]
+    ports:
+      - "27201:27017"
+    volumes:
+      - shard1-data-01:/data/db
+
+  shard1-02:
+    image: mongo:latest
+    container_name: shard1-02
+    command:
+      [
+        "--shardsvr",
+        "--replSet",
+        "shard1Repl",
+        "--bind_ip_all",
+        "--port",
+        "27017",
+        "--dbpath",
+        "/data/db"
+      ]
+    ports:
+      - "27202:27017"
+    volumes:
+      - shard1-data-02:/data/db
+
+  shard1-03:
+    image: mongo:latest
+    container_name: shard1-03
+    command:
+      [
+        "--shardsvr",
+        "--replSet",
+        "shard1Repl",
+        "--bind_ip_all",
+        "--port",
+        "27017",
+        "--dbpath",
+        "/data/db"
+      ]
+    ports:
+      - "27203:27017"
+    volumes:
+      - shard1-data-03:/data/db
+
+  shard2-01:
+    image: mongo:latest
+    container_name: shard2-01
+    command:
+      [
+        "--shardsvr",
+        "--replSet",
+        "shard2Repl",
+        "--bind_ip_all",
+        "--port",
+        "27017",
+        "--dbpath",
+        "/data/db"
+      ]
+    ports:
+      - "27301:27017"
+    volumes:
+      - shard2-data-01:/data/db
+
+  shard2-02:
+    image: mongo:latest
+    container_name: shard2-02
+    command:
+      [
+        "--shardsvr",
+        "--replSet",
+        "shard2Repl",
+        "--bind_ip_all",
+        "--port",
+        "27017",
+        "--dbpath",
+        "/data/db"
+      ]
+    ports:
+      - "27302:27017"
+    volumes:
+      - shard2-data-02:/data/db
+
+  shard2-03:
+    image: mongo:latest
+    container_name: shard2-03
+    command:
+      [
+        "--shardsvr",
+        "--replSet",
+        "shard2Repl",
+        "--bind_ip_all",
+        "--port",
+        "27017",
+        "--dbpath",
+        "/data/db"
+      ]
+    ports:
+      - "27303:27017"
+    volumes:
+      - shard2-data-03:/data/db
+
+  mongos_router:
+    image: mongo:latest
+    container_name: mongos_router
+    depends_on:
+      - configsvr01
+      - configsvr02
+      - configsvr03
+    command: [
+      "mongos",
+      "--configdb",
+      "configRepl/configsvr01:27017,configsvr02:27017,configsvr03:27017",
+      "--bind_ip_all",
+      "--port",
+      "27020"
+    ]
+    ports:
+      - "27020:27020"
+
+  pymongo_api:
+    container_name: pymongo_api
+    build:
+      context: api_app
+      dockerfile: Dockerfile
+    depends_on:
+      - mongos_router
+    ports:
+      - "8080:8080"
+    environment:
+      MONGODB_URL: "mongodb://mongos_router:27020"
+      MONGODB_DATABASE_NAME: "somedb"
+
+volumes:
+  config-data-01:
+  config-data-02:
+  config-data-03:
+
+  shard1-data-01:
+  shard1-data-02:
+  shard1-data-03:
+
+  shard2-data-01:
+  shard2-data-02:
+  shard2-data-03:

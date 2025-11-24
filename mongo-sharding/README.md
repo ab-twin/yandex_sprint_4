@@ -1,10 +1,5 @@
 # pymongo-api
 
-# ВИДЕО РАБОТЫ ЗАДАНИЙ
-
-можно посмотреть видео тут:
-[output.mp4](output.mp4)
-
 ## Как запустить
 
 Запускаем mongodb и приложение
@@ -13,8 +8,13 @@
 docker compose up -d
 ```
 
-Заполняем mongodb данными
+Убедитесь что все контейнеры запустились
 
+```shell
+docker compose ps
+```
+
+Заполняем mongodb данными
 
 ```shell
 ./scripts/mongo-init.sh
